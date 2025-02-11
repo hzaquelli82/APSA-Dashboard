@@ -162,7 +162,8 @@ with col1:
             'axis': {'range': [0, 8]},
             'bar': {'color': color},
             'steps': [
-                {'range': [0, 4], 'color': "lightcoral"},
+                {'range': [0, 2], 'color': "red"},
+                {'range': [2, 4], 'color': "lightcoral"},
                 {'range': [4, 6], 'color': "gold"},
                 {'range': [6, 8], 'color': "lightgreen"}
             ]
