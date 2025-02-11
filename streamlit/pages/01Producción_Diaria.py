@@ -124,7 +124,7 @@ st.markdown('<p class="big-font">Control de Producción</p>', unsafe_allow_html=
 
 fig = make_subplots(rows=2, cols=1, 
                     subplot_titles=("Productos Elaborados", "Rendimientos"),
-                    vertical_spacing=0.4)
+                    vertical_spacing=0.5)
 
 #Productos elaborados
 fig.add_trace(go.Bar(x=df['Nombre'], y=df['Dosificado'], name="Barras"),
