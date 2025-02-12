@@ -120,7 +120,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown('<p class="big-font">Control de Producción</p>', unsafe_allow_html=True)
+st.markdown('<p class="big-font">Indicadores Diarios</p>', unsafe_allow_html=True)
 
 
 # Crear columnas con diferentes proporciones
