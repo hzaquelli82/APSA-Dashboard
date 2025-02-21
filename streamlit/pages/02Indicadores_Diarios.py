@@ -99,7 +99,14 @@ df = obtener_df()
 tn_total = df['Dosificado'].sum()/1000
 
 # Horas totales
-hs_total = df['Tiempo'].astype('int64').sum() / 3.6e12
+primera_hora = df.loc[df.index[0], 'Hora'].seconds / 3600
+ultima_hora = df.loc[df.index[-1], 'Tiempo']
+# hs_total = df['Tiempo'].astype('int64').sum() / 3.6e12
+if pd.isna(ultima_hora):
+    hs_total = (hora_actual.total_seconds() / 3600) - primera_hora
+else:
+    hs_total = df['Tiempo'].astype('int64').sum() / 3.6e12
+    
 
 #Rendimiento promedio
 rendimiento_gral = (tn_total / hs_total)
