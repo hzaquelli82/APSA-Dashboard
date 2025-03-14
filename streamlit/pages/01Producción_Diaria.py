@@ -1,7 +1,7 @@
 import streamlit as st
 import mysql.connector
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -23,7 +23,9 @@ def conectar_mysql():
         database=st.secrets["mysql"]["database"]
     )
 
-def obtener_df():
+def obtener_df(fecha_actual_param):
+    fecha_ayer_param = (fecha_actual_param - timedelta(days=1)).strftime("%Y-%m-%d")
+    
     cur.execute('''
                 SELECT                 
                     tareaseje.NroID,
@@ -39,10 +41,11 @@ def obtener_df():
                 JOIN 
                     dbp8100.formulas AS formulas ON formulas.NroID = tareaseje.IDF
                 WHERE
-                    Fecha = %s
+                    (tareaseje.Fecha = %s AND tareaseje.Hora >= '23:00:00') OR 
+                    (tareaseje.Fecha > %s AND tareaseje.Fecha <= %s AND tareaseje.Hora < '23:00:00')
                 GROUP BY
                     tareaseje.NroID
-                ''', (fecha_actual,))
+                ''',(fecha_ayer_param, fecha_ayer_param, fecha_actual_param.strftime("%Y-%m-%d")),)
     resultados = cur.fetchall()
     # Obtener los nombres de las columnas
     columnas = [desc[0] for desc in cur.description]
@@ -50,10 +53,8 @@ def obtener_df():
     # Crear un DataFrame de pandas
     df = pd.DataFrame(resultados, columns=columnas)
 
-    # Cerrar el cursor y la conexión
-    cur.close()
-    db.close()
-
+    #Cerrar el cursor y la conexión
+    
     #Corregir los tiempos 0
     # Identificar filas con tiempo 0
     mask = df['Tiempo'] == pd.Timedelta(0)
@@ -71,28 +72,26 @@ def obtener_df():
 
     return df
 
-if st.sidebar.button("Actualizar"):
-    db = conectar_mysql()
-    cur = db.cursor()
+# Sidebar Date Picker
+default_date = datetime.now()
+selected_date = st.sidebar.date_input("Seleccione una fecha:", default_date)
 
-    #Obtener  hora
-    fecha_actual = datetime.now()
-    fecha_actual = fecha_actual.strftime("%Y-%m-%d")
-    hora_actual = pd.to_timedelta(datetime.now().strftime('%H:%M:%S'))
+# Convert the selected date to a datetime object (at midnight)
+fecha_actual = datetime.combine(selected_date, datetime.min.time())
 
-
-    df = obtener_df()
-#Conectar base de datos
+# Conectar base de datos
 db = conectar_mysql()
 cur = db.cursor()
 
-#Obtener fecha y hora
-fecha_actual = datetime.now()
-fecha_actual = fecha_actual.strftime("%Y-%m-%d")
+#Obtener  hora
 hora_actual = pd.to_timedelta(datetime.now().strftime('%H:%M:%S'))
 
+if st.sidebar.button("Actualizar"):
+    df = obtener_df(fecha_actual)
 
-df = obtener_df()
+else:
+    df = obtener_df(fecha_actual)
+    
 
 #Toneladas elaboradas
 tn_total = df['Dosificado'].sum()/1000
@@ -140,3 +139,6 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig)
+
+cur.close()
+db.close()
