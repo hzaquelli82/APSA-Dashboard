@@ -15,6 +15,12 @@ st.set_page_config(
 
 st.logo('images/Logo_Inst.png', size='large')
 
+def format_timedelta_hh_mm_ss(td: timedelta) -> str:
+    total_seconds = int(td.total_seconds())
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+
 def conectar_mysql():
     return mysql.connector.connect(
         host=st.secrets["mysql"]["host"],
@@ -41,7 +47,7 @@ def obtener_df(fecha_actual_param):
                 JOIN 
                     dbp8100.formulas AS formulas ON formulas.NroID = tareaseje.IDF
                 WHERE
-                    (tareaseje.Fecha = %s AND tareaseje.Hora >= '23:00:00') OR 
+                    (tareaseje.Fecha = %s AND tareaseje.Hora >= '22:00:00') OR 
                     (tareaseje.Fecha > %s AND tareaseje.Fecha <= %s AND tareaseje.Hora < '23:00:00')
                 GROUP BY
                     tareaseje.NroID
@@ -122,15 +128,15 @@ st.markdown('<p class="big-font">Control de Producción</p>', unsafe_allow_html=
 
 
 fig = make_subplots(rows=2, cols=1, 
-                    subplot_titles=("Productos Elaborados", "Rendimientos"),
+                    subplot_titles=("Productos Elaborados",),
                     vertical_spacing=0.5)
 
 #Productos elaborados
 fig.add_trace(go.Bar(x=df['Nombre'], y=df['Dosificado'], name="Barras"),
               row=1, col=1)
 hora = df['Hora'].astype('int64')/3.6e12
-fig.add_trace(go.Scatter(x=hora, y=df['Rendimiento'], mode='lines+markers', name="Líneas"),
-              row=2, col=1)
+# fig.add_trace(go.Scatter(x=hora, y=df['Rendimiento'], mode='lines+markers', name="Líneas"),
+#               row=2, col=1)
 # Ajustar el dominio de los ejes y la altura de cada gráfico
 fig.update_layout(
     height=600,  # Altura total de la figura
@@ -139,6 +145,12 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig)
+
+# Obtener datos crudos
+df_raw = obtener_df(fecha_actual)
+df_raw['Hora'] = df_raw['Hora'].apply(format_timedelta_hh_mm_ss)
+
+st.dataframe(df_raw)
 
 cur.close()
 db.close()
