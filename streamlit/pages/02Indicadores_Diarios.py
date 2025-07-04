@@ -61,6 +61,14 @@ def obtener_df(fecha_actual_param):
     df['Rendimiento'] = (df['Dosificado'] / (df['Tiempo'].astype('int64')/3.6e12))/1000
     return df
 
+def custom_metric(label, value, color="#f0f2f6"):
+    st.markdown(f"""
+        <div style="border: 2px solid #ddd; border-radius: 15px; padding: 20px; background-color: {color}; text-align: center; margin: 10px 0;">
+            <div style="font-size: 20px; font-weight: 600; color: #555;">{label}</div>
+            <div style="font-size: 40px; font-weight: bold; margin: 10px 0;">{value}</div>
+            
+        </div>
+    """, unsafe_allow_html=True)
 
 # Sidebar Date Picker
 default_date = datetime.now()
@@ -110,59 +118,11 @@ st.markdown('<p class="big-font">Indicadores Diarios</p>', unsafe_allow_html=Tru
 col0, col1, col2 = st.columns([2, 3, 2], gap='large',vertical_alignment='top')
 
 with col0:
-    fig = go.Figure(go.Indicator(
-        mode="number",
-        value=tn_total,
-        title={
-            'text': "Producción Total (tn)",
-            'font': {'size': 14},
-            'align': "center"
-        },
-        ))
-    st.plotly_chart(fig)
+    custom_metric("Producción Total (tn)", tn_total.round(2))
+    # st.metric(label="Producción Total (tn)", value=tn_total.round(2),)
 
 with col1:
-    if rendimiento_gral < 4:
-        color = "red"
-    elif 4 <= rendimiento_gral < 6:
-        color = "orange"
-    else:
-        color = "green"
-
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=rendimiento_gral,
-        title={
-            'text': "Rendimiento Gral (tn/h)",
-            'font': {'size': 16},
-            'align': "center"
-        },
-        gauge={
-            'axis': {'range': [0, 8]},
-            'bar': {'color': color},
-            'steps': [
-                {'range': [0, 2], 'color': "red"},
-                {'range': [2, 4], 'color': "lightcoral"},
-                {'range': [4, 6], 'color': "gold"},
-                {'range': [6, 8], 'color': "lightgreen"}
-            ]
-        }
-    ))
-    st.plotly_chart(fig, use_container_width=True)
-
-with col2:
-    fig = go.Figure(go.Indicator(
-        mode="number",
-        value=hs_total,
-        title={
-            'text': "Horas de Producción (Hs)",
-            'font': {'size': 14},
-            'align': "center"
-        },
-        ))
-    st.plotly_chart(fig)
-
-options = {
+    options = {
         "series": [
             {
                 "type": "gauge",
@@ -174,7 +134,7 @@ options = {
                 "max": 8,
                 "splitNumber": 4,
                 "itemStyle": {
-                    "color": "#4CAF50" if rendimiento_gral >= 6 else "#FF9800" if rendimiento_gral >= 4 else "#F44336"
+                    "color": "#60FD68" if rendimiento_gral >= 6 else "#FF9800" if rendimiento_gral >= 4 else "#F44336"
                 },
                 "progress": {
                     "show": True,
@@ -217,7 +177,7 @@ options = {
                 },
                 "detail": {
                     "valueAnimation": True,
-                    "fontSize": 50,
+                    "fontSize": 30,
                     "offsetCenter": [0, "-10%"],
                     "formatter": "{value}tn/h",
                     "color": "inherit"
@@ -231,7 +191,13 @@ options = {
         ]
     }
 
-st_echarts(options=options, height="400px")
+    st_echarts(options=options, height="300px")
+    
+with col2:
+    custom_metric("Horas de Producción (Hs)", hs_total.round(2))
+    # st.metric(label="Horas de Producción (Hs)", value=hs_total.round(2))
+    
+
 
 cur.close()
 db.close()
