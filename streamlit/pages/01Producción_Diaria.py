@@ -48,7 +48,7 @@ def obtener_df(fecha_actual_param):
                     dbp8100.formulas AS formulas ON formulas.NroID = tareaseje.IDF
                 WHERE
                     (tareaseje.Fecha = %s AND tareaseje.Hora >= '22:00:00') OR 
-                    (tareaseje.Fecha > %s AND tareaseje.Fecha <= %s AND tareaseje.Hora < '23:00:00')
+                    (tareaseje.Fecha > %s AND tareaseje.Fecha <= %s AND tareaseje.Hora < '22:00:00')
                 GROUP BY
                     tareaseje.NroID
                 ''',(fecha_ayer_param, fecha_ayer_param, fecha_actual_param.strftime("%Y-%m-%d")),)

@@ -43,7 +43,7 @@ def obtener_df(fecha_actual_param):
                     dbp8100.formulas AS formulas ON formulas.NroID = tareaseje.IDF
                 WHERE
                     (tareaseje.Fecha = %s AND tareaseje.Hora >= '22:00:00') OR 
-                    (tareaseje.Fecha > %s AND tareaseje.Fecha <= %s AND tareaseje.Hora < '23:00:00')
+                    (tareaseje.Fecha > %s AND tareaseje.Fecha <= %s AND tareaseje.Hora < '22:00:00')
                 GROUP BY
                     tareaseje.NroID
                 ''', (fecha_ayer_param, fecha_ayer_param, fecha_actual_param.strftime("%Y-%m-%d")))
@@ -89,13 +89,19 @@ else:
 
 
 tn_total = df['Dosificado'].sum()/1000
-primera_hora = df.loc[df.index[0], 'Hora'].seconds / 3600
+primera_fecha = (df.loc[df.index[0], 'Fecha'].strftime("%Y-%m-%d"))
+if primera_fecha != fecha_actual.strftime("%Y-%m-%d"):
+    primera_hora = (df.loc[df.index[0], 'Hora'].seconds / 3600) - 24.00
+else:
+    primera_hora = df.loc[df.index[0], 'Hora'].seconds / 3600
+
 ultima_hora = df.loc[df.index[-1], 'Tiempo']
 
 if pd.isna(ultima_hora):
     hs_total = (hora_actual.total_seconds() / 3600) - primera_hora
 else:
     hs_total = df['Tiempo'].astype('int64').sum() / 3.6e12
+
 
 rendimiento_gral = (tn_total / hs_total)
 
@@ -195,9 +201,14 @@ with col1:
     
 with col2:
     custom_metric("Horas de Producción (Hs)", hs_total.round(2))
+    
+    st.write(primera_hora)
+    st.write(hora_actual)
+    # st.write(ultima_hora - primera_hora)
     # st.metric(label="Horas de Producción (Hs)", value=hs_total.round(2))
     
-
+st.write(type(primera_hora))
+st.write(type(fecha_actual))
 
 cur.close()
 db.close()
