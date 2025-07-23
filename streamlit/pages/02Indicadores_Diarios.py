@@ -113,6 +113,10 @@ st.markdown(
         font-size: 40px !important;
         color: blue;
     }
+    .medium-font {
+        font-size: 25px !important;
+        text-align: center;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -128,6 +132,7 @@ with col0:
     # st.metric(label="Producción Total (tn)", value=tn_total.round(2),)
 
 with col1:
+    st.markdown('<div class="medium-font">Rendimiento General (tn/h)</div>', unsafe_allow_html=True)
     options = {
         "series": [
             {
@@ -202,13 +207,7 @@ with col1:
 with col2:
     custom_metric("Horas de Producción (Hs)", hs_total.round(2))
     
-    st.write(primera_hora)
-    st.write(hora_actual)
-    # st.write(ultima_hora - primera_hora)
-    # st.metric(label="Horas de Producción (Hs)", value=hs_total.round(2))
-    
-st.write(type(primera_hora))
-st.write(type(fecha_actual))
+   
 
 cur.close()
 db.close()
