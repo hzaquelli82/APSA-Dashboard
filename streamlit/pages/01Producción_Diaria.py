@@ -108,6 +108,11 @@ hs_total = df['Tiempo'].astype('int64').sum() / 3.6e12
 #Rendimiento promedio
 rendimiento_gral = (tn_total / hs_total)
 
+# Productos elaborados
+productos_elab = df['Nombre'].unique().tolist()
+
+selected_prod = st.sidebar.multiselect("Seleccione un producto:", productos_elab)
+
 
 #Formateo y gráficos
 
