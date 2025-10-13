@@ -15,7 +15,7 @@ st.markdown(
     <style>
     .big-font {
         font-size: 60px !important;
-        color: black;
+        color: gray;
         text-align: center;
         font-weight: bold;
     }
