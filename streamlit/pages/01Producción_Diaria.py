@@ -29,6 +29,7 @@ def conectar_mysql():
         database=st.secrets["mysql"]["database"]
     )
 
+@st.cache_data(ttl=300)
 def obtener_df(fecha_actual_param):
     fecha_ayer_param = (fecha_actual_param - timedelta(days=1)).strftime("%Y-%m-%d")
     
