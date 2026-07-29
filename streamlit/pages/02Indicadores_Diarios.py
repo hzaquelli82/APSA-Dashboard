@@ -1,8 +1,12 @@
 import streamlit as st
 import mysql.connector
 import pandas as pd
+import time
 from datetime import datetime, timedelta
 from streamlit_echarts import st_echarts
+from streamlit_autorefresh import st_autorefresh
+
+count = st_autorefresh(interval=60000, limit=None, key="counter_autorefresh")
 
 st.set_page_config(
     page_title="Control de Producción",
@@ -33,7 +37,7 @@ def conectar_mysql():
         database=st.secrets["mysql"]["database"]
     )
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=60)
 def obtener_df(fecha_actual_param, hora_referencia):
     fecha_ayer_param = (fecha_actual_param - timedelta(days=1)).strftime("%Y-%m-%d")
     fecha_str = fecha_actual_param.strftime("%Y-%m-%d")
@@ -109,6 +113,7 @@ hora_actual = pd.to_timedelta(datetime.now().strftime('%H:%M:%S')) if es_hoy els
 
 if st.sidebar.button("Actualizar"):
     st.cache_data.clear()
+
 
 df = obtener_df(fecha_actual, hora_actual)
 
