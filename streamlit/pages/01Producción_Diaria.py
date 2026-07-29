@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from streamlit_autorefresh import st_autorefresh
+
 
 st.set_page_config(
     page_title="Control de Producción",
@@ -14,6 +16,9 @@ st.set_page_config(
 )
 
 st.logo('images/Logo_Inst.png', size='large')
+
+count = st_autorefresh(interval=60000, limit=None, key="counter_autorefresh")
+
 
 def format_timedelta_hh_mm_ss(td) -> str:
     if pd.isna(td):
@@ -36,7 +41,7 @@ def conectar_mysql():
         database=st.secrets["mysql"]["database"]
     )
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=60)
 def obtener_df(fecha_actual_param, hora_referencia):
     fecha_ayer_param = (fecha_actual_param - timedelta(days=1)).strftime("%Y-%m-%d")
     fecha_str = fecha_actual_param.strftime("%Y-%m-%d")

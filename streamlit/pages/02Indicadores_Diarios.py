@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 from streamlit_echarts import st_echarts
 from streamlit_autorefresh import st_autorefresh
 
-count = st_autorefresh(interval=60000, limit=None, key="counter_autorefresh")
 
 st.set_page_config(
     page_title="Control de Producción",
@@ -28,6 +27,8 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+count = st_autorefresh(interval=60000, limit=None, key="counter_autorefresh")
 
 def conectar_mysql():
     return mysql.connector.connect(
