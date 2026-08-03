@@ -68,9 +68,9 @@ Sigue estos pasos para configurar el entorno de desarrollo local.
         ```
 
 3.  **Instala las dependencias:**
-    El archivo `requeriment.txt` contiene todas las librerías necesarias.
+    El archivo `requirements.txt` contiene todas las librerías necesarias.
     ```bash
-    pip install -r requeriment.txt
+    pip install -r requirements.txt
     ```
 
 ## Configuración
@@ -111,6 +111,6 @@ La aplicación se abrirá automáticamente en tu navegador web.
 ├── images/                   # Directorio para logos y capturas de pantalla
 ├── .streamlit/
 │   └── secrets.toml          # Archivo de configuración de credenciales (creado por el usuario)
-├── requeriment.txt         # Dependencias de Python
+├── requirements.txt         # Dependencias de Python
 └── iniciar_streamlit.bat   # Script para iniciar la app en Windows
 ```

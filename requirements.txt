@@ -3,4 +3,5 @@ pandas
 mysql-connector-python
 plotly
 nbformat
-streamlit_echarts
+streamlit-echarts
+streamlit-autorefresh
